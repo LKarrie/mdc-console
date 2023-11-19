@@ -1,0 +1,20 @@
+@import "../../styles/variables.scss";
+
+.bread{
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  ol {
+    li {
+      display: flex;
+      align-items: center;
+      a {
+        display: flex;
+        font-weight: bold;
+        align-items: center;
+        height: 40px;
+        padding: 10px;
+      }
+    }
+  }
+}

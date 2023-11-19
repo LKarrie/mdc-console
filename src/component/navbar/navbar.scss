@@ -1,0 +1,58 @@
+@import "../../styles/responsive.scss";
+@import "../../styles/variables.scss";
+
+.navbar {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  background-color: $dark-bg;
+  color: $light-color;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 300px;
+    height: 20px;
+
+    img {
+      width: 30px;
+      height: 30px;
+    }
+    span {
+      @include md{
+        display: none;
+      }
+    }
+  }
+  .icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    
+    .icon{
+      @include sm{
+        display: none;
+      }
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      align-items: center;
+      gap: 10px;
+
+      img {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        object-fit: cover;
+        background-color: $light-color;
+        border: 1px solid $soft-color
+      }
+    }
+  }
+}

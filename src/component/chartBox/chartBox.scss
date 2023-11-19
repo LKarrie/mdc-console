@@ -1,0 +1,10 @@
+@import "../../styles/responsive.scss";
+
+.chartBox{
+  display: flex;
+  height: 100%;
+
+  @include sm{
+    flex-direction: column;
+  }
+}
