@@ -14,19 +14,13 @@ export const menu = [
   },
   {
     id: 2,
-    title: "镜像迁移",
+    title: "容器",
     icon: "/docker.svg",
     listItems: [
       {
         id: 1,
-        title: "镜像下载",
-        url: "/images/download",
-        icon: "/docker.svg",
-      },
-      {
-        id: 2,
-        title: "镜像推送",
-        url: "/images/push",
+        title: "镜像管理",
+        url: "/images/management",
         icon: "/docker.svg",
       },
     ],

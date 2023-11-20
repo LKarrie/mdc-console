@@ -57,12 +57,15 @@ export async function tagImage(imageId:string,target:string){
  * 下载 单个/批量
  * @returns 
  */
-export async function saveImage(images:string[]){
+export async function saveImage(progressCallBack:React.Dispatch<React.SetStateAction<number>>,images:string[]){
   const res = await axios.post(`${mdcServer}`+"/images/save",{
       images: images
     },
     {
-      responseType: 'blob'
+      responseType: 'blob',
+      onDownloadProgress(progressEvent) {
+        progressCallBack && progressCallBack(progressEvent.progress as number)
+      },
     }
   )
   return res

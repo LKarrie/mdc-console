@@ -1,16 +1,17 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { App, Button, ConfigProvider, Input, Modal, Popconfirm, Space, Table, Tag, Tooltip, message } from 'antd';
+import { App, Button, ConfigProvider, Input, Modal, Popconfirm, Progress, Space, Table, Tag, Tooltip, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import "./dataTable.scss"
+import "./imagesTable.scss"
 import Search, { SearchProps } from 'antd/es/input/Search';
-import DataModal from '../dataModal/DataModal';
+import ImagesModal from '../imagesModal/ImagesModal';
 import { getImages, saveImage } from '../../request/apis';
 import { QueryFunction, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
 import { handleErrorMsg } from '../../utils/util';
+import ProcessModal from '../processModal/ProcessModal';
 
 const colors:string[]= ['geekblue','green','volcano']
-
+const twoColors = { '0%': '#108ee9', '100%': '#87d068' };
 const PullRegistry ="https://docker.io/"
 const PushRegistry ="https://docker.io/"
 
@@ -64,7 +65,8 @@ const data: DataType[] = [
       "VirtualSize": 19357569
   },
 ];
-const DataTable = () => {
+const ImageTable = () => {
+
   const queryClient = useQueryClient();
   const { message, notification } = App.useApp();
   const searhInputEl: MutableRefObject<any>  = useRef(null);
@@ -78,6 +80,7 @@ const DataTable = () => {
       ellipsis: true,
       fixed: 'left',
       width: 200,
+      responsive: ['md'],
     },
     {
       title: '镜像标签',
@@ -86,12 +89,10 @@ const DataTable = () => {
       render: (_, { RepoTags }) => (
         <>
           {RepoTags.map((tag) => {
-            let randomInt = Math.floor(Math.random()*3)
-            let color = colors[randomInt]
             return (
-                <Tag color={color} key={tag}>
-                  {tag}
-                </Tag>
+              <Tag color={colors[0]} key={tag}>
+                {tag}
+              </Tag>
             );
           })}
         </>
@@ -104,13 +105,27 @@ const DataTable = () => {
       render: (_, record) => (
         <Space size="middle" key={record.Id}>
           <Button type="link" onClick={()=>newTag(record.Id)}>新增标签</Button>
-          <Button type="text" onClick={()=>downloadMutation.mutate([record.RepoTags[0]])}>
-              下载
+          <Button type="link" onClick={()=>newTag(record.Id)}>镜像推送</Button>
+          <Button type="text" loading={downloadingIds.includes(record.Id)} onClick={()=>{
+              if(downloadingIds.length<1){
+                // 这里是未来可能支持多个同时下载的准备
+                setDownloadingIds([...downloadingIds,record.Id])
+                downloadMutation.mutateAsync([record.RepoTags[0]]).then(()=>{
+                  setDownloadingIds(downloadingIds.filter(id => id !== record.Id))
+                }).catch(()=>{
+                  setDownloadingIds(downloadingIds.filter(id => id !== record.Id))
+                })
+              } else {
+                openErrorNotification(notification,"下载失败","等待其他下载任务结束")
+              }
+          }}>
+              {downloadingIds.includes(record.Id)? '下载中' : '下载'}
           </Button>
         </Space>
       ),
       fixed: 'right',
-      width: 200,
+      width: 300,
+      responsive: ['md'],
     },
   ];
 
@@ -120,30 +135,40 @@ const DataTable = () => {
 
   // 批量 选择
   const batchDownLoad = () => {
-    setLoading(true);
-    // ajax request after empty completing
-    let imageNames:string[] = []
-    images.data.map((image:any)=>{
-      let temp:any = selectedRowKeys.find((id)=>{
-        return image.Id == id
+    if(downloadingIds.length<1){
+      setLoading(true);
+      // ajax request after empty completing
+      let imageNames:string[] = []
+      let imageIds:string[] = []
+      images.data.map((image:any)=>{
+        let temp:any = selectedRowKeys.find((id)=>{
+          return image.Id == id
+        })
+        if(temp){
+          // TODO select Name
+          imageNames.push(image.RepoTags[0])
+          imageIds.push(image.Id)
+        }
       })
-      if(temp){
-        // TODO select Name
-        imageNames.push(image.RepoTags[0])
-      }
-    })
-    downloadMutation.mutateAsync(imageNames).then(()=>{
-      // 取消 按钮 Loading 和 多选
-      setLoading(false);
-      setSelectedRowKeys([]);
-    })
-  };
+      setDownloadingIds([...imageIds])
 
+      downloadMutation.mutateAsync(imageNames).then(()=>{
+        // 取消 按钮 Loading 和 多选
+        setLoading(false);
+        setSelectedRowKeys([]);
+        setDownloadingIds([])
+      }).catch(()=>{
+        setLoading(false);
+        setDownloadingIds([])
+      })
+    } else {
+      openErrorNotification(notification,"下载失败","等待其他下载任务结束")
+    }
+  };
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     // console.log('selectedRowKeys changed: ', newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
-
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -163,19 +188,17 @@ const DataTable = () => {
   // 批量删除
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-
   const showPopconfirm = () => {
     setOpen(true);
   };
-
   const handleOk = () => {
     setConfirmLoading(true);
+    // TODO add delete api
     setTimeout(() => {
       setOpen(false);
       setConfirmLoading(false);
     }, 2000);
   };
-
   const handleCancel = () => {
     console.log('Clicked cancel button');
     setOpen(false);
@@ -183,7 +206,6 @@ const DataTable = () => {
 
   // 弹框
   const [openModal, setOpenModal] = useState(false);
-
   const showModal = () => {
     setOpenModal(true);
   };
@@ -211,9 +233,13 @@ const DataTable = () => {
   },[images.isError])
 
   // 处理 镜像下载
-  // TODO 单个下载 增加 Loading
+  console.log("refesh")
+  const [downLoadProcess, setDownLoadProcess] = useState(0)
+  const [downLoadProcessStatus, setDownLoadProcessStatus] = useState(undefined)
+  const [openDownloadProcessModal, setOpenDownloadProcessModal] = useState(false)
+  const [downloadingIds, setDownloadingIds] = useState([] as string[])
   const downloadMutation = useMutation({
-    mutationFn: (images:string[])=> saveImage(images),
+    mutationFn: (images:string[])=> saveImage(setDownLoadProcess,images),
     onSuccess: (response)=>{
       const href = window.URL.createObjectURL(response.data)
       const anchorElement = document.createElement('a')
@@ -227,15 +253,26 @@ const DataTable = () => {
       anchorElement.click();
       document.body.removeChild(anchorElement);
       window.URL.revokeObjectURL(href);
-      openSuccessMessage(message,"下载成功!")
+      // 多余
+      // openSuccessMessage(message,"下载成功!")
+      setDownLoadProcessStatus('success' as any)
+      setTimeout(()=>{
+        setOpenDownloadProcessModal(false)
+      },2000)
     },
     onError: (error:any)=>{
       openErrorNotification(notification,"下载失败",handleErrorMsg(error))
+      setDownLoadProcessStatus('exception' as any)
     },
+    onMutate: ()=>{
+      setDownLoadProcess(0)
+      setDownLoadProcessStatus('active' as any)
+      setOpenDownloadProcessModal(true)
+    }
   })
 
   return (
-    <div className="dataTable">
+    <div className="imagesTable">
       <ConfigProvider
             theme={{
               components: {
@@ -292,7 +329,7 @@ const DataTable = () => {
           loading={images.isFetching}
           rowKey={recode=> recode.Id}
           rowSelection={rowSelection}
-          scroll={{ x: 1000, y: 600 }}
+          scroll={{ x: 1000, y: 800 }}
           columns={columns} 
           pagination={{
             size: "default",
@@ -304,7 +341,7 @@ const DataTable = () => {
           }} 
           dataSource={images.data} />
 
-        <DataModal
+        <ImagesModal
           title="镜像拉取"
           placeholder="请输入需要拉取的镜像标签"
           openModal={openModal}
@@ -313,7 +350,7 @@ const DataTable = () => {
           registry={PullRegistry}
         />
 
-        <DataModal
+        <ImagesModal
           title="新增标签"
           placeholder="请输需要为当前镜像新增的标签"
           openModal={openModalNewTag}
@@ -322,9 +359,18 @@ const DataTable = () => {
           imageId={newTagImageId}
           registry={PushRegistry}
         />
+
+        {/* 暂时控制只能单个下载单个展示进度 */}
+        <ProcessModal
+          openModal={openDownloadProcessModal}
+          operation="download"
+          setOpenModal={setOpenDownloadProcessModal}
+          process={Math.trunc(downLoadProcess*100)}
+          processStatus={downLoadProcessStatus}
+        />
       </ConfigProvider>
     </div>
   )
 }
 
-export default DataTable
+export default ImageTable

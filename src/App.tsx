@@ -70,7 +70,7 @@ function App(){
           element:<Home/>
         },
         {
-          path:"/images/download",
+          path:"/images/management",
           element:<Images/>
         },
         {

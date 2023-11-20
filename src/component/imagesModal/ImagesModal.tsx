@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { pullImage, tagImage } from '../../request/apis';
 import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
 import { handleErrorMsg } from '../../utils/util';
-// import "./dataModal.scss"
+// import "./imageModal.scss"
 
 type Props = {
   title: string,
@@ -16,7 +16,7 @@ type Props = {
   registry: string,
 }
 
-const DataModal = (prop:Props) => {
+const ImageModal = (prop:Props) => {
   const { message, notification } = App.useApp();
   // 弹框
   const [confirmLoadingModal, setConfirmLoadingModal] = useState(false);
@@ -88,7 +88,7 @@ const DataModal = (prop:Props) => {
   };
 
   return (
-      <div className="dataModal">
+      <div className="imageModal">
         <Modal
           // centered
           title={prop.title}
@@ -111,4 +111,4 @@ const DataModal = (prop:Props) => {
   )
 }
 
-export default DataModal
+export default ImageModal

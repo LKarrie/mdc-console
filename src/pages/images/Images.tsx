@@ -1,10 +1,10 @@
-import DataTable from "../../component/dataTable/DataTable";
+import ImagesTable from "../../component/imagesTable/ImagesTable";
 import "./images.scss";
 
 const Images = () => {
   return (
     <div className="images">
-      <DataTable/>
+      <ImagesTable/>
     </div>
   )
 }
