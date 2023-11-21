@@ -5,6 +5,7 @@ import { pullImage, tagImage } from '../../request/apis';
 import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
 import { handleErrorMsg } from '../../utils/util';
 import "./processModal.scss"
+import { HourglassTwoTone } from '@ant-design/icons';
 
 const twoColors = { '0%': '#108ee9', '100%': '#87d068' };
 
@@ -22,18 +23,22 @@ const ProcessModal = (prop:Props) => {
   }
 
   return (
-
+    <div className='processModal'>    
       <Modal
-        title={prop.operation === 'download' ? '下载进度' : '进度展示'}
+        title={<><HourglassTwoTone /> 下载进度</>}
         open={prop.openModal}
         onCancel={handleCancel}
         maskClosable={false}
         footer={[
         ]}
       >
-        <Progress percent={prop.process} status={prop.processStatus} strokeColor={twoColors} />
+        <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+          <br/>
+            <Progress percent={prop.process} status={prop.processStatus} strokeColor={twoColors} />
+          <br/>
+        </Space>
       </Modal>
-
+    </div>
   )
 }
 

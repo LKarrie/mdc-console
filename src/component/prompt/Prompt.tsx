@@ -23,3 +23,11 @@ export function openErrorNotification (notification: NotificationInstance,title:
 export function openSuccessMessage (message:MessageInstance,text:string){
   message.success(text);
 } 
+
+export function openInfoMessage (message:MessageInstance,text:string){
+  message.info(text);
+} 
+
+export function openErrorMessage (message:MessageInstance,text:string){
+  message.error(text);
+} 

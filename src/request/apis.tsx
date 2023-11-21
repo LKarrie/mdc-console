@@ -70,3 +70,5 @@ export async function saveImage(progressCallBack:React.Dispatch<React.SetStateAc
   )
   return res
 }
+
+export const uploadLoadAction= `${mdcServer}`+"/images/load"

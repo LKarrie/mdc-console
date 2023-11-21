@@ -9,6 +9,8 @@ import { QueryFunction, useMutation, useQuery, useQueryClient } from '@tanstack/
 import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
 import { handleErrorMsg } from '../../utils/util';
 import ProcessModal from '../processModal/ProcessModal';
+import ImagesUpload from '../imagesUpload/ImagesUpload';
+import { InteractionTwoTone, PullRequestOutlined, TagsTwoTone } from '@ant-design/icons';
 
 const colors:string[]= ['geekblue','green','volcano']
 const twoColors = { '0%': '#108ee9', '100%': '#87d068' };
@@ -204,7 +206,13 @@ const ImageTable = () => {
     setOpen(false);
   };
 
-  // 弹框
+  // 弹框 拉取
+  const [openModalLoad, setOpenModalLoad] = useState(false);
+  const showModalLoad = () => {
+    setOpenModalLoad(true);
+  };
+
+  // 弹框 拉取
   const [openModal, setOpenModal] = useState(false);
   const showModal = () => {
     setOpenModal(true);
@@ -263,6 +271,9 @@ const ImageTable = () => {
     onError: (error:any)=>{
       openErrorNotification(notification,"下载失败",handleErrorMsg(error))
       setDownLoadProcessStatus('exception' as any)
+      setTimeout(()=>{
+        setOpenDownloadProcessModal(false)
+      },2000)
     },
     onMutate: ()=>{
       setDownLoadProcess(0)
@@ -285,6 +296,11 @@ const ImageTable = () => {
             }}
         >
         <Space size="middle">
+
+          <Button type="primary" onClick={showModalLoad} >
+            镜像上传
+          </Button>
+
           <Button type="primary" onClick={showModal} >
             镜像拉取
           </Button>
@@ -342,7 +358,7 @@ const ImageTable = () => {
           dataSource={images.data} />
 
         <ImagesModal
-          title="镜像拉取"
+          title={<><InteractionTwoTone /> 镜像拉取</>}
           placeholder="请输入需要拉取的镜像标签"
           openModal={openModal}
           setOpenModal={setOpenModal}
@@ -351,7 +367,7 @@ const ImageTable = () => {
         />
 
         <ImagesModal
-          title="新增标签"
+          title={<><TagsTwoTone /> 新增标签</>}
           placeholder="请输需要为当前镜像新增的标签"
           openModal={openModalNewTag}
           setOpenModal={setOpenModalNewTag}
@@ -367,6 +383,11 @@ const ImageTable = () => {
           setOpenModal={setOpenDownloadProcessModal}
           process={Math.trunc(downLoadProcess*100)}
           processStatus={downLoadProcessStatus}
+        />
+
+        <ImagesUpload
+          openModal={openModalLoad}
+          setOpenModal={setOpenModalLoad}
         />
       </ConfigProvider>
     </div>

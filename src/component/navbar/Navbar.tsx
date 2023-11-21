@@ -1,6 +1,11 @@
+import { LogoutOutlined } from "@ant-design/icons"
 import "./navbar.scss"
+import { openInfoMessage } from "../prompt/Prompt"
+import { App } from "antd";
 
 const Navbar = () => {
+  const { message } = App.useApp();
+
   return (
     <div className="navbar">
       <div className="logo">
@@ -9,9 +14,10 @@ const Navbar = () => {
       </div>
       <div className="icons">
         <div className="user">
-          <img src="/fishing.svg" alt="" />
-          <span>LKarrie</span>
+          <img className="avator" src="/fishing.svg" alt="" />
+          <span>Anonymous</span>
         </div>
+        <LogoutOutlined onClick={()=>openInfoMessage(message,"在做了,还没做完")} className="logout" />
       </div>
     </div>
   )

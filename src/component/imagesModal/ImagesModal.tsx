@@ -1,13 +1,13 @@
-import React, { MutableRefObject, useRef, useState } from 'react';
+import React, { MutableRefObject, ReactNode, useRef, useState } from 'react';
 import { App, Button, ConfigProvider, Input, Modal, Popconfirm, Space, Table, Tag, Tooltip, message,} from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { pullImage, tagImage } from '../../request/apis';
 import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
 import { handleErrorMsg } from '../../utils/util';
-// import "./imageModal.scss"
+import "./imagesModal.scss"
 
 type Props = {
-  title: string,
+  title: ReactNode,
   placeholder: string,
   openModal: boolean,
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
@@ -98,14 +98,18 @@ const ImageModal = (prop:Props) => {
           onCancel={handleModalCancel}
           okButtonProps={{ disabled: !okReady }}
         >
-          <Input 
-            addonBefore={prop.registry}
-            placeholder={prop.placeholder} 
-            onChange={onChange} 
-            ref = {inputEl}
-            allowClear
-            onPressEnter={handleModalOk}
-            />
+          <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+            <br/>
+              <Input 
+                addonBefore={prop.registry}
+                placeholder={prop.placeholder} 
+                onChange={onChange} 
+                ref = {inputEl}
+                allowClear
+                onPressEnter={handleModalOk}
+                />
+            <br/>
+          </Space>
         </Modal>
       </div>
   )

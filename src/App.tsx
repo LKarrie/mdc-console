@@ -16,6 +16,8 @@ import Bread from "./component/bread/Bread";
 import { ConfigProvider, theme , App as AntdApp} from "antd";
 import zhCN from 'antd/es/locale/zh_CN';
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Maintenance from "./pages/maintenance/Maintenance";
+
 
 const queryClient = new QueryClient()
 
@@ -74,8 +76,24 @@ function App(){
           element:<Images/>
         },
         {
-          path:"/images/push",
-          element:<Images/>
+          path:"/nginx/management",
+          element:<Maintenance/>
+        },
+        {
+          path:"/users/role",
+          element:<Maintenance/>
+        },
+        {
+          path:"users/management",
+          element:<Maintenance/>
+        },
+        {
+          path:"/setting/parameter",
+          element:<Maintenance/>
+        },
+        {
+          path:"/setting/values",
+          element:<Maintenance/>
         },
       ]
     },
