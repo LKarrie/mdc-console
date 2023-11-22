@@ -1,7 +1,8 @@
 import {
   createBrowserRouter,
   RouterProvider,
-  Outlet
+  Outlet,
+  createHashRouter
 } from "react-router-dom";
 import Home from "./pages/home/Home"
 import Navbar from "./component/navbar/Navbar";
@@ -62,7 +63,7 @@ function App(){
       )
   }
 
-  const router = createBrowserRouter([
+  const router = createHashRouter([
     {
       path: "/",
       element:<Layout/>,

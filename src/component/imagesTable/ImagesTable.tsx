@@ -10,12 +10,12 @@ import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
 import { handleErrorMsg } from '../../utils/util';
 import ProcessModal from '../processModal/ProcessModal';
 import ImagesUpload from '../imagesUpload/ImagesUpload';
-import { InteractionTwoTone, PullRequestOutlined, TagsTwoTone } from '@ant-design/icons';
+import { BoxPlotTwoTone, InteractionTwoTone, PullRequestOutlined, TagsTwoTone } from '@ant-design/icons';
 
 const colors:string[]= ['geekblue','green','volcano']
 const twoColors = { '0%': '#108ee9', '100%': '#87d068' };
-const PullRegistry ="https://docker.io/"
-const PushRegistry ="https://docker.io/"
+// const PullRegistry ="https://docker.io/"
+// const PushRegistry ="https://docker.io/"
 
 interface DataType {
   Containers: number;
@@ -107,7 +107,7 @@ const ImageTable = () => {
       render: (_, record) => (
         <Space size="middle" key={record.Id}>
           <Button type="link" onClick={()=>newTag(record.Id)}>新增标签</Button>
-          <Button type="link" onClick={()=>newTag(record.Id)}>镜像推送</Button>
+          <Button type="link" onClick={()=>newPush(record.RepoTags)}>镜像推送</Button>
           <Button type="text" loading={downloadingIds.includes(record.Id)} onClick={()=>{
               if(downloadingIds.length<1){
                 // 这里是未来可能支持多个同时下载的准备
@@ -225,6 +225,21 @@ const ImageTable = () => {
   };
   const [openModalNewTag, setOpenModalNewTag] = useState(false);
   const [newTagImageId, setNewTagImageId] = useState("");
+
+  // 弹框 推送
+  const newPush = (tags:string[])  => {
+    setOpenModalNewPush(true)
+    let list:{
+      label: string;
+      value: string;
+    }[]=[]
+    tags.map(
+      (tag) => (list.push({label: tag,value: tag,}))
+    )
+    setNewPushImageTags(list as any)
+  };
+  const [openModalNewPush, setOpenModalNewPush] = useState(false);
+  const [newPushImageTags, setNewPushImageTags] = useState([]);
 
   // 查询所有镜像
   const images = useQuery({
@@ -363,7 +378,7 @@ const ImageTable = () => {
           openModal={openModal}
           setOpenModal={setOpenModal}
           operation="pull"
-          registry={PullRegistry}
+          // registry={PullRegistry}
         />
 
         <ImagesModal
@@ -373,7 +388,16 @@ const ImageTable = () => {
           setOpenModal={setOpenModalNewTag}
           operation="tag"
           imageId={newTagImageId}
-          registry={PushRegistry}
+        />
+
+        <ImagesModal
+          title={<><BoxPlotTwoTone /> 镜像推送</>}
+          placeholder="请选择需要推送的镜像标签"
+          openModal={openModalNewPush}
+          setOpenModal={setOpenModalNewPush}
+          operation="push"
+          tags={newPushImageTags}
+          // registry={PushRegistry}
         />
 
         {/* 暂时控制只能单个下载单个展示进度 */}
