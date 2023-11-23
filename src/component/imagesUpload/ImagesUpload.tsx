@@ -4,7 +4,7 @@ import { FileZipTwoTone, StarOutlined, UploadOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd';
 import { Button, Upload } from 'antd';
 import { uploadLoadAction } from "../../request/apis";
-import { openErrorMessage, openSuccessMessage } from "../prompt/Prompt";
+import { openErrorMessage, openErrorNotification, openSuccessMessage } from "../prompt/Prompt";
 import { useQueryClient } from "@tanstack/react-query";
 import "./imagesUpload.scss"
 
@@ -16,7 +16,7 @@ type Props = {
 const allowUploadFileType = ['application/x-gzip','application/x-tar']
 
 const ImagesUpload = (prop:Props) => {
-  const { message } = App.useApp();
+  const { message,notification } = App.useApp();
   const queryClient = useQueryClient();
   const props: UploadProps = {
     beforeUpload: (file) => {
@@ -40,7 +40,7 @@ const ImagesUpload = (prop:Props) => {
           queryClient.invalidateQueries({ queryKey: ["images"] })
         },2000)
       } else if (info.file.status === 'error') {
-        openErrorMessage(message,`${info.file.name} 镜像包上传失败`)
+        openErrorNotification(notification,"镜像包上传失败",info.file.response?.error)
       }
     },
     showUploadList: {

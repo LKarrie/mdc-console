@@ -81,7 +81,7 @@ const ImageTable = () => {
       render: (text) => <Tooltip placement="topLeft" title={text}><span>{text}</span></Tooltip>,
       ellipsis: true,
       fixed: 'left',
-      width: 200,
+      width: 100,
       responsive: ['md'],
     },
     {
@@ -360,7 +360,7 @@ const ImageTable = () => {
           loading={images.isFetching}
           rowKey={recode=> recode.Id}
           rowSelection={rowSelection}
-          scroll={{ x: "1000", y: "calc(40vh)" }}
+          scroll={{ x: 1000, y: "calc(40vh)" }}
           columns={columns} 
           pagination={{
             size: "default",
