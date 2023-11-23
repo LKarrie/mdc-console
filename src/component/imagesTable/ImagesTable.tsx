@@ -360,7 +360,7 @@ const ImageTable = () => {
           loading={images.isFetching}
           rowKey={recode=> recode.Id}
           rowSelection={rowSelection}
-          scroll={{ x: 1000, y: 800 }}
+          scroll={{ x: "1000", y: "calc(40vh)" }}
           columns={columns} 
           pagination={{
             size: "default",

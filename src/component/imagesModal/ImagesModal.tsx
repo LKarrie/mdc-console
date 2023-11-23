@@ -1,7 +1,7 @@
 import React, { MutableRefObject, ReactNode, useEffect, useRef, useState } from 'react';
 import { App, Button, ConfigProvider, Input, Modal, Popconfirm, Select, Space, Table, Tag, Tooltip, message,} from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { pullImage, tagImage } from '../../request/apis';
+import { pullImage, pushImage, tagImage } from '../../request/apis';
 import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
 import { handleErrorMsg } from '../../utils/util';
 import "./imagesModal.scss"
@@ -74,7 +74,7 @@ const ImageModal = (prop:Props) => {
     }
   })
   const pushMutation = useMutation({
-    mutationFn: (imageName:string)=> tagImage(prop.imageId as string,imageName),
+    mutationFn: (imageName:string)=> pushImage(imageName as string),
     onSuccess: ()=>{
       openSuccessMessage(message,"推送成功!")
       // Push 应该只会推一次 自动关闭
@@ -83,7 +83,7 @@ const ImageModal = (prop:Props) => {
     },
     onError: (error:any)=>{
       setConfirmLoadingModal(false)
-      openErrorNotification(notification,"推送成功",handleErrorMsg(error))
+      openErrorNotification(notification,"推送失败",handleErrorMsg(error))
     },
     onMutate: ()=>{
       setConfirmLoadingModal(true)
@@ -97,8 +97,7 @@ const ImageModal = (prop:Props) => {
     } else if (prop.operation === "pull") {
       pullMutation.mutate(inputEl.current.input.value)
     } else {
-      // pullMutation.mutate(inputEl.current.input.value)
-      console.log(selected);
+      pushMutation.mutate(selected)
     }
   }
 

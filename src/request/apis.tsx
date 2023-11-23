@@ -71,4 +71,19 @@ export async function saveImage(progressCallBack:React.Dispatch<React.SetStateAc
   return res
 }
 
+/**
+ * 镜像上传
+ */
 export const uploadLoadAction= `${mdcServer}`+"/images/load"
+
+/**
+ * 镜像推送 单个
+ * @returns 
+ */
+export async function pushImage(imageName:string){
+  const res = await axios.post(`${mdcServer}`+"/images/push",{
+    image_name: imageName,
+    }
+  )
+  return res.data
+}
