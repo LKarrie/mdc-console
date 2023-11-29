@@ -1,18 +1,7 @@
-import { QueryFunction } from "@tanstack/react-query"
 import axios from "axios"
 
 // axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
-
-const mdcServer = "http://127.0.0.1:8080"
-
-// router.GET("/images/list", server.listImage)
-// router.POST("/images/pull", server.pullImage)
-// router.POST("/images/pull/auth", server.pullImageWithAuth)
-// router.POST("/images/create/tag", server.tagImage)
-// router.POST("/images/save", server.saveImage)
-// router.POST("/images/load", server.loadImage)
-// router.POST("/images/push", server.pushImage)
-// router.POST("/images/push/auth", server.pushImageWithAuth)
+const mdcServer = import.meta.env.VITE_MDC_SERVER+"/mdc/api"
 
 /**
  * 获取所有本地所有镜像列表，分页前端处理
@@ -83,6 +72,18 @@ export const uploadLoadAction= `${mdcServer}`+"/images/load"
 export async function pushImage(imageName:string){
   const res = await axios.post(`${mdcServer}`+"/images/push",{
     image_name: imageName,
+    }
+  )
+  return res.data
+}
+
+/**
+ * 镜像删除 批量
+ * @returns 
+ */
+export async function removeImages(imageIds:string[]){
+  const res = await axios.post(`${mdcServer}`+"/images/remove/batch",{
+    image_ids: imageIds,
     }
   )
   return res.data

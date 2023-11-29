@@ -1,21 +1,21 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { App, Button, ConfigProvider, Input, Modal, Popconfirm, Progress, Space, Table, Tag, Tooltip, message } from 'antd';
+import { App, Button, ConfigProvider, Popconfirm, Space, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import "./imagesTable.scss"
 import Search, { SearchProps } from 'antd/es/input/Search';
 import ImagesModal from '../imagesModal/ImagesModal';
-import { getImages, saveImage } from '../../request/apis';
-import { QueryFunction, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getImages, removeImages, saveImage } from '../../request/apis';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
 import { handleErrorMsg } from '../../utils/util';
 import ProcessModal from '../processModal/ProcessModal';
 import ImagesUpload from '../imagesUpload/ImagesUpload';
-import { BoxPlotTwoTone, InteractionTwoTone, PullRequestOutlined, TagsTwoTone } from '@ant-design/icons';
+import { BoxPlotTwoTone, InteractionTwoTone, TagsTwoTone } from '@ant-design/icons';
 
 const colors:string[]= ['geekblue','green','volcano']
-const twoColors = { '0%': '#108ee9', '100%': '#87d068' };
-// const PullRegistry ="https://docker.io/"
-// const PushRegistry ="https://docker.io/"
+// const twoColors = { '0%': '#108ee9', '100%': '#87d068' };
+// TODO just a fake tips 
+const PullRegistry = import.meta.env.VITE_REGISTRY_SCHEME
 
 interface DataType {
   Containers: number;
@@ -30,47 +30,10 @@ interface DataType {
   VirtualSize: number;
 }
 
-const data: DataType[] = [
-    {
-      "Containers": -1,
-      "Created": 1700152410,
-      "Id": "sha256:3f39be3950d4169b5eb8fd91574c9e3588482df2c982d062dd99994244e7b98f",
-      "Labels": {
-          "com.docker.compose.project": "learn-go-project",
-          "com.docker.compose.service": "api",
-          "com.docker.compose.version": "2.15.1"
-      },
-      "ParentId": "",
-      "RepoDigests": null,
-      "RepoTags": [
-          "learn-go-project-api:latest1",
-          "learn-go-project-api:latest2",
-          "learn-go-project-api:latest3",
-          "learn-go-project-api:latest4"
-      ],
-      "SharedSize": -1,
-      "Size": 70397855,
-      "VirtualSize": 70397855
-  },
-  {
-      "Containers": -1,
-      "Created": 1700151164,
-      "Id": "sha256:866b7c725d437b8e3a45c4107e7fb474ed512b9b006968dbf17020853302e7fa",
-      "Labels": null,
-      "ParentId": "",
-      "RepoDigests": null,
-      "RepoTags": [
-          "test:latest"
-      ],
-      "SharedSize": -1,
-      "Size": 19357569,
-      "VirtualSize": 19357569
-  },
-];
 const ImageTable = () => {
 
   const queryClient = useQueryClient();
-  const { message, notification } = App.useApp();
+  const { message,notification } = App.useApp();
   const searhInputEl: MutableRefObject<any>  = useRef(null);
 
   const columns: ColumnsType<DataType> = [
@@ -195,14 +158,17 @@ const ImageTable = () => {
   };
   const handleOk = () => {
     setConfirmLoading(true);
-    // TODO add delete api
-    setTimeout(() => {
+    removeMutation.mutateAsync(selectedRowKeys as string[]).then(()=>{
+      // 取消 按钮 Loading 和 多选
       setOpen(false);
       setConfirmLoading(false);
-    }, 2000);
+      setSelectedRowKeys([]);
+    }).catch(()=>{
+      setConfirmLoading(false);
+      setOpen(false);
+    })
   };
   const handleCancel = () => {
-    console.log('Clicked cancel button');
     setOpen(false);
   };
 
@@ -256,7 +222,6 @@ const ImageTable = () => {
   },[images.isError])
 
   // 处理 镜像下载
-  console.log("refesh")
   const [downLoadProcess, setDownLoadProcess] = useState(0)
   const [downLoadProcessStatus, setDownLoadProcessStatus] = useState(undefined)
   const [openDownloadProcessModal, setOpenDownloadProcessModal] = useState(false)
@@ -297,6 +262,20 @@ const ImageTable = () => {
     }
   })
 
+  // 处理 批量删除
+  const removeMutation = useMutation({
+    mutationFn: (imagesIds:string[])=> removeImages(imagesIds),
+    onSuccess: ()=>{
+      openSuccessMessage(message,"删除成功,2s后自动刷新镜像列表")
+      setTimeout(()=>{
+        queryClient.invalidateQueries({ queryKey: ["images"] })
+      },2000)
+    },
+    onError: (error:any)=>{
+      openErrorNotification(notification,"删除失败",handleErrorMsg(error))
+    }
+  })
+
   return (
     <div className="imagesTable">
       <ConfigProvider
@@ -326,7 +305,7 @@ const ImageTable = () => {
 
           <Popconfirm
             title="警告"
-            description="确认删除所有被选镜像吗?"
+            description="确定删除所有被选镜像吗?"
             placement="leftTop"
             open={open}
             onConfirm={handleOk}
@@ -337,9 +316,7 @@ const ImageTable = () => {
               type="primary" 
               danger 
               onClick={showPopconfirm}
-              // TODO
-              // disabled={!hasSelected}
-              disabled={true}
+              disabled={!hasSelected}
               >
               批量删除
             </Button>
@@ -378,7 +355,7 @@ const ImageTable = () => {
           openModal={openModal}
           setOpenModal={setOpenModal}
           operation="pull"
-          // registry={PullRegistry}
+          registry={PullRegistry}
         />
 
         <ImagesModal
@@ -397,7 +374,6 @@ const ImageTable = () => {
           setOpenModal={setOpenModalNewPush}
           operation="push"
           tags={newPushImageTags}
-          // registry={PushRegistry}
         />
 
         {/* 暂时控制只能单个下载单个展示进度 */}

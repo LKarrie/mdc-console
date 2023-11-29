@@ -1,11 +1,10 @@
 import React, { MutableRefObject, ReactNode, useEffect, useRef, useState } from 'react';
-import { App, Button, ConfigProvider, Input, Modal, Popconfirm, Select, Space, Table, Tag, Tooltip, message,} from 'antd';
+import { App, Input, Modal, Select, Space } from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { pullImage, pushImage, tagImage } from '../../request/apis';
 import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
 import { handleErrorMsg } from '../../utils/util';
 import "./imagesModal.scss"
-import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 type Props = {
   title: ReactNode,
@@ -36,11 +35,11 @@ const ImageModal = (prop:Props) => {
   const pullMutation = useMutation({
     mutationFn:(imageName:string)=>pullImage(imageName),
     onSuccess: ()=>{
-      openSuccessMessage(message,"拉取成功!")
+      openSuccessMessage(message,"拉取成功,2s后自动刷新镜像列表")
       // 拉取可能会多次操作 所以不自动关闭
       // prop.setOpenModal(false)
       setConfirmLoadingModal(false)
-      // 删除镜像后 docker 需要等待docker接口刷新 即刻刷新还会是旧数据 太快了
+      // 拉取镜像后 docker 需要等待docker接口刷新 即刻刷新还会是旧数据 太快了
       setTimeout(()=>{
         queryClient.invalidateQueries({ queryKey: ["images"] })
       },2000)

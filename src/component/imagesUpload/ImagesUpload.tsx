@@ -1,6 +1,6 @@
-import { App, Modal, Space, message } from "antd"
-import React, { useState } from 'react';
-import { FileZipTwoTone, StarOutlined, UploadOutlined } from '@ant-design/icons';
+import { App, Modal, Space } from "antd"
+import React from 'react';
+import { FileZipTwoTone, UploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, Upload } from 'antd';
 import { uploadLoadAction } from "../../request/apis";

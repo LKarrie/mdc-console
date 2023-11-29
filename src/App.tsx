@@ -1,8 +1,7 @@
 import {
   createBrowserRouter,
   RouterProvider,
-  Outlet,
-  createHashRouter
+  Outlet
 } from "react-router-dom";
 import Home from "./pages/home/Home"
 import Navbar from "./component/navbar/Navbar";
@@ -63,49 +62,55 @@ function App(){
       )
   }
 
-  const router = createHashRouter([
-    {
-      path: "/",
-      element:<Layout/>,
-      children:[
-        {
-          path:"/",
-          element:<Home/>
-        },
-        {
-          path:"/images/management",
-          element:<Images/>
-        },
-        {
-          path:"/nginx/management",
-          element:<Maintenance/>
-        },
-        {
-          path:"/users/role",
-          element:<Maintenance/>
-        },
-        {
-          path:"users/management",
-          element:<Maintenance/>
-        },
-        {
-          path:"/setting/parameter",
-          element:<Maintenance/>
-        },
-        {
-          path:"/setting/values",
-          element:<Maintenance/>
-        },
-      ]
-    },
-    {
-      path:"/login",
-      element:<Login/>
-    },
-  ]);
+  const router = createBrowserRouter(
+      [{
+        path: "/",
+        element:<Layout/>,
+        children:[
+          {
+            path:"/",
+            element:<Home/>
+          },
+          {
+            path:"/images/management",
+            element:<Images/>
+          },
+          {
+            path:"/nginx/management",
+            element:<Maintenance/>
+          },
+          {
+            path:"/users/role",
+            element:<Maintenance/>
+          },
+          {
+            path:"/users/management",
+            element:<Maintenance/>
+          },
+          {
+            path:"/setting/parameter",
+            element:<Maintenance/>
+          },
+          {
+            path:"/setting/values",
+            element:<Maintenance/>
+          },
+        ]
+      },
+      {
+        path:"/login",
+        element:<Login/>
+      }],
+      {
+        basename: "/mdc"
+      }
+    );
 
  return (
-    <RouterProvider router={router}/>
+    <RouterProvider 
+      router={router}  
+      // fallbackElement={<BigSpinner />}
+    />
  )
 }
 

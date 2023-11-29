@@ -2,77 +2,77 @@ export const menu = [
   {
     id: 1,
     title: "概览",
-    icon: "/首页.svg",
+    icon: "/mdc/svg/home.svg",
     listItems: [
       {
         id: 1,
         title: "首页",
         url: "/",
-        icon: "/首页.svg",
+        icon: "/mdc/svg/home.svg",
       },
     ],
   },
   {
     id: 2,
     title: "容器",
-    icon: "/docker.svg",
+    icon: "/mdc/svg/docker.svg",
     listItems: [
       {
         id: 1,
         title: "镜像管理",
         url: "/images/management",
-        icon: "/docker.svg",
+        icon: "/mdc/svg/docker.svg",
       },
     ],
   },
   {
     id: 3,
     title: "中间件",
-    icon: "/nginx.svg",
+    icon: "/mdc/svg/nginx.svg",
     listItems: [
       {
         id: 1,
         title: "NGINX管理",
         url: "/nginx/management",
-        icon: "/nginx.svg",
+        icon: "/mdc/svg/nginx.svg",
       },
     ],
   },
   {
     id: 4,
     title: "用户设置",
-    icon: "/角色管理.svg",
+    icon: "/mdc/svg/roles.svg",
     listItems: [
       {
         id: 1,
         title: "角色管理",
         url: "/users/role",
-        icon: "/角色管理.svg",
+        icon: "/mdc/svg/roles.svg",
       },
       {
         id: 2,
         title: "用户管理",
         url: "/users/management",
-        icon: "/用户管理.svg",
+        icon: "/mdc/svg/users.svg",
       },
     ],
   },
   {
     id: 5,
     title: "系统设置",
-    icon: "/系统参数.svg",
+    icon: "/mdc/svg/sysparameter.svg",
     listItems: [
       {
         id: 1,
         title: "系统参数",
         url: "/setting/parameter",
-        icon: "/系统参数.svg",
+        icon: "/mdc/svg/sysparameter.svg",
       },
       {
         id: 2,
         title: "值列表",
         url: "/setting/values",
-        icon: "/值列表.svg",
+        icon: "/mdc/svg/values.svg",
       },
     ],
   },
