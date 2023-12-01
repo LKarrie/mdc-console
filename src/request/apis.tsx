@@ -2,6 +2,8 @@ import axios from "axios"
 
 // axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
 const mdcServer = import.meta.env.VITE_MDC_SERVER+"/mdc/api"
+const mdcHarborBotName = import.meta.env.VITE_HARBOR_BOT_NAME
+const mdcHarborBotSecret= import.meta.env.VITE_HARBOR_BOT_SECRET
 
 /**
  * 获取所有本地所有镜像列表，分页前端处理
@@ -22,8 +24,10 @@ export async function getImages(key?:string|""){
  * @returns 
  */
 export async function pullImage(imageName:string){
-  const res = await axios.post(`${mdcServer}`+"/images/pull",{
+  const res = await axios.post(`${mdcServer}`+"/images/pull/auth",{
       image_name: imageName,
+      username: mdcHarborBotName,
+      password: mdcHarborBotSecret
     }
   )
   return res.data
@@ -70,8 +74,12 @@ export const uploadLoadAction= `${mdcServer}`+"/images/load"
  * @returns 
  */
 export async function pushImage(imageName:string){
-  const res = await axios.post(`${mdcServer}`+"/images/push",{
+  //robot$mdc k2M8zg1SIV2bbboZBbgzfmMNbAwGbN7g
+
+  const res = await axios.post(`${mdcServer}`+"/images/push/auth",{
     image_name: imageName,
+    username: mdcHarborBotName,
+    password: mdcHarborBotSecret
     }
   )
   return res.data

@@ -25,3 +25,6 @@ yarn.lock
 *.njsproj
 *.sln
 *.sw?
+
+# Harbor
+robot$mdc.json

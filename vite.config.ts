@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   envDir:"env",
-  base:'/mdc',
+  base:'/mdc/',
   server: {
     // host: 'localhost',
     // port: 9000,

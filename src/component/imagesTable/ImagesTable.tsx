@@ -90,7 +90,6 @@ const ImageTable = () => {
       ),
       fixed: 'right',
       width: 300,
-      responsive: ['md'],
     },
   ];
 
@@ -365,6 +364,7 @@ const ImageTable = () => {
           setOpenModal={setOpenModalNewTag}
           operation="tag"
           imageId={newTagImageId}
+          registry={PullRegistry}
         />
 
         <ImagesModal

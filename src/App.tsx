@@ -1,7 +1,7 @@
 import {
-  createBrowserRouter,
   RouterProvider,
-  Outlet
+  Outlet,
+  createHashRouter
 } from "react-router-dom";
 import Home from "./pages/home/Home"
 import Navbar from "./component/navbar/Navbar";
@@ -62,7 +62,7 @@ function App(){
       )
   }
 
-  const router = createBrowserRouter(
+  const router = createHashRouter(
       [{
         path: "/",
         element:<Layout/>,
@@ -101,9 +101,11 @@ function App(){
         path:"/login",
         element:<Login/>
       }],
-      {
-        basename: "/mdc"
-      }
+      // 只对 HashRouter # 后的路由地址生效 没意义
+      // 在 BrowserRouter 可以使用 
+      // {
+      //   basename: "/mdc"
+      // }
     );
 
  return (
