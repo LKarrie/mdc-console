@@ -1,5 +1,5 @@
-import React, { MutableRefObject, ReactNode, useEffect, useRef, useState } from 'react';
-import { App, Input, Modal, Select, Space } from 'antd';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import { App, Input, InputRef, Modal, Select, Space } from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { pullImage, pushImage, tagImage } from '../../request/apis';
 import { openErrorNotification, openSuccessMessage } from '../prompt/Prompt';
@@ -29,7 +29,7 @@ const ImageModal = (prop:Props) => {
   const [okReady, setOkReady] = useState(false)
   // 会导悬浮页面重复渲染 is not good
   // const [value, setValue] = useState("");
-  const inputEl: MutableRefObject<any>  = useRef(null)
+  const inputEl = useRef<InputRef>(null);
 
   const queryClient = useQueryClient();
   const pullMutation = useMutation({
@@ -44,7 +44,7 @@ const ImageModal = (prop:Props) => {
         queryClient.invalidateQueries({ queryKey: ["images"] })
       },2000)
     },
-    onError: (error:any)=>{
+    onError: (error)=>{
       setConfirmLoadingModal(false)
       openErrorNotification(notification,"拉取失败",handleErrorMsg(error))
     },
@@ -64,7 +64,7 @@ const ImageModal = (prop:Props) => {
         queryClient.invalidateQueries({ queryKey: ["images"] })
       },2000)
     },
-    onError: (error:any)=>{
+    onError: (error)=>{
       setConfirmLoadingModal(false)
       openErrorNotification(notification,"新增失败",handleErrorMsg(error))
     },
@@ -80,7 +80,7 @@ const ImageModal = (prop:Props) => {
       prop.setOpenModal(false)
       setConfirmLoadingModal(false)
     },
-    onError: (error:any)=>{
+    onError: (error)=>{
       setConfirmLoadingModal(false)
       openErrorNotification(notification,"推送失败",handleErrorMsg(error))
     },
@@ -92,9 +92,9 @@ const ImageModal = (prop:Props) => {
   const handleModalOk = () => {
     setConfirmLoadingModal(true)
     if (prop.operation === "tag"){
-      tagMutation.mutate(inputEl.current.input.value)
+      tagMutation.mutate(inputEl.current?.input?.value as string)
     } else if (prop.operation === "pull") {
-      pullMutation.mutate(inputEl.current.input.value)
+      pullMutation.mutate(inputEl.current?.input?.value as string)
     } else {
       pushMutation.mutate(selected)
     }

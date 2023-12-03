@@ -6,17 +6,17 @@ import {menu} from "../../data"
 
 const Bread = () => {
   let location = useLocation()
-  const [items,setItems] = useState()
+  const [items,setItems] = useState<{ title: string; }[]>()
 
   useEffect(() => {
     menu.map((list)=>{
       list.listItems.map((item)=>{
         if (item.url === location.pathname && location.pathname === '/'){
-          let tmp =[{title:list.title},{title:item.title}] as any
+          let tmp =[{title:list.title},{title:item.title}]
           setItems(tmp)
         } 
         if (item.url === location.pathname && location.pathname != '/') {
-          let tmp =[{title:list.title},{title:item.title}] as any
+          let tmp =[{title:list.title},{title:item.title}]
           setItems(tmp)
         }
       })

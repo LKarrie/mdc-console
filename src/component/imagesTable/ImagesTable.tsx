@@ -1,5 +1,5 @@
-import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { App, Button, ConfigProvider, Popconfirm, Space, Table, Tag, Tooltip } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import { App, Button, ConfigProvider, InputRef, Popconfirm, Space, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import "./imagesTable.scss"
 import Search, { SearchProps } from 'antd/es/input/Search';
@@ -34,8 +34,7 @@ const ImageTable = () => {
 
   const queryClient = useQueryClient();
   const { message,notification } = App.useApp();
-  const searhInputEl: MutableRefObject<any>  = useRef(null);
-
+  const searhInputEl = useRef<InputRef>(null);
   const columns: ColumnsType<DataType> = [
     {
       title: '镜像ID',
@@ -105,7 +104,7 @@ const ImageTable = () => {
       let imageNames:string[] = []
       let imageIds:string[] = []
       images.data.map((image:any)=>{
-        let temp:any = selectedRowKeys.find((id)=>{
+        let temp = selectedRowKeys.find((id)=>{
           return image.Id == id
         })
         if(temp){
@@ -143,7 +142,7 @@ const ImageTable = () => {
   // 查询
   const onSearch: SearchProps['onSearch'] = (value, _e, info) => {
     // 来源 info?.source 判断是 输入 还是 清空搜索
-    if (info?.source === 'clear') {
+    if (info?.source === 'clear' && searhInputEl.current && searhInputEl.current.input) {
       searhInputEl.current.input.value = value
     }
     queryClient.invalidateQueries({ queryKey: ["images"] })
@@ -201,15 +200,15 @@ const ImageTable = () => {
     tags.map(
       (tag) => (list.push({label: tag,value: tag,}))
     )
-    setNewPushImageTags(list as any)
+    setNewPushImageTags(list)
   };
   const [openModalNewPush, setOpenModalNewPush] = useState(false);
-  const [newPushImageTags, setNewPushImageTags] = useState([]);
+  const [newPushImageTags, setNewPushImageTags] = useState<{ label: string; value: string; }[]>([]);
 
   // 查询所有镜像
   const images = useQuery({
     queryKey:["images"],
-    queryFn: ()=>getImages(searhInputEl.current.input.value),
+    queryFn: ()=>getImages(searhInputEl.current?.input?.value),
     retry: 0
   })
 
@@ -222,7 +221,7 @@ const ImageTable = () => {
 
   // 处理 镜像下载
   const [downLoadProcess, setDownLoadProcess] = useState(0)
-  const [downLoadProcessStatus, setDownLoadProcessStatus] = useState(undefined)
+  const [downLoadProcessStatus, setDownLoadProcessStatus] = useState<"success" | "exception" | "active" | "normal" | undefined>(undefined)
   const [openDownloadProcessModal, setOpenDownloadProcessModal] = useState(false)
   const [downloadingIds, setDownloadingIds] = useState([] as string[])
   const downloadMutation = useMutation({
@@ -242,21 +241,21 @@ const ImageTable = () => {
       window.URL.revokeObjectURL(href);
       // 多余
       // openSuccessMessage(message,"下载成功!")
-      setDownLoadProcessStatus('success' as any)
+      setDownLoadProcessStatus('success')
       setTimeout(()=>{
         setOpenDownloadProcessModal(false)
       },2000)
     },
-    onError: (error:any)=>{
+    onError: (error)=>{
       openErrorNotification(notification,"下载失败",handleErrorMsg(error))
-      setDownLoadProcessStatus('exception' as any)
+      setDownLoadProcessStatus('exception')
       setTimeout(()=>{
         setOpenDownloadProcessModal(false)
       },2000)
     },
     onMutate: ()=>{
       setDownLoadProcess(0)
-      setDownLoadProcessStatus('active' as any)
+      setDownLoadProcessStatus('active')
       setOpenDownloadProcessModal(true)
     }
   })
@@ -270,7 +269,7 @@ const ImageTable = () => {
         queryClient.invalidateQueries({ queryKey: ["images"] })
       },2000)
     },
-    onError: (error:any)=>{
+    onError: (error)=>{
       openErrorNotification(notification,"删除失败",handleErrorMsg(error))
     }
   })
@@ -336,7 +335,7 @@ const ImageTable = () => {
           loading={images.isFetching}
           rowKey={recode=> recode.Id}
           rowSelection={rowSelection}
-          scroll={{ x: 1000, y: "calc(40vh)" }}
+          scroll={{ x: 1000, y: "calc(100vh - 350px)" }}
           columns={columns} 
           pagination={{
             size: "default",
